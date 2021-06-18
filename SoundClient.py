@@ -1,7 +1,18 @@
 import socket  # Import socket module
 import os
 import re
+import pickle
 
+class DataPacket:
+    def __init__(self):
+        pass
+
+    def write(self, string):
+        self._string = string
+
+    @property
+    def string(self):
+        return self._string
 
 class AudioClient():
     def __init__(self,port,Serverip):
@@ -13,6 +24,8 @@ class AudioClient():
         self.Socket.connect((self.Serverip,self.port))
 
     def send_data_to_server(self,data):
+        
+        data = pickle.dumps(data)
         self.Socket.send(data)
 
     def recieve_data(self):
@@ -21,6 +34,10 @@ class AudioClient():
             print(data)
         else:
             print("no data recieved")
+
+    def close_connection(self):
+        self.Socket.shutdown()
+        self.Socket.close()
 
 #BOB = AudioClient(50000,"localhost")    
 #BOB.connect_to_server()

@@ -14,10 +14,10 @@ import soundfile as sf
 import numpy  # Make sure NumPy is loaded before it is used in the callback
 assert numpy  # avoid "imported but unused" message (W0611)
 
-from SoundClient import AudioClient
+#from SoundClient import AudioClient
 
-BOB = AudioClient(50000,"localhost")    
-BOB.connect_to_server()
+#BOB = AudioClient(50000,"localhost")    
+#BOB.connect_to_server()
 
 def int_or_str(text):
     """Helper function for argument parsing."""
@@ -61,8 +61,8 @@ def callback(indata, frames, time, status):
     if status:
         print(status, file=sys.stderr)
     q.put(indata.copy())
-    BOB.send_data_to_server(bytes(indata.copy()))
-    BOB.recieve_data()
+    #BOB.send_data_to_server(bytes(indata.copy()))
+    #BOB.recieve_data()
     #x+=1
 
 
