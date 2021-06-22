@@ -1,4 +1,5 @@
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 
 class Auswerter(object):
@@ -9,6 +10,7 @@ class Auswerter(object):
         self.real_sende_times = []
         self.real_recieve_times = []
         self.unterschiede = []
+        self.x_points = []
         self.read_from_recievetimes()
         self.read_from_sendetimes()
         self.zeiten_erhalten()
@@ -47,7 +49,8 @@ class Auswerter(object):
                 Eingang = self.real_recieve_times[i]
                 duration = Eingang - Ausgang
                 print(Eingang-Ausgang)
-                self.unterschiede.append(duration.microseconds)
+                self.unterschiede.append(duration.microseconds/1000)
+                self.x_points.append(i)
                 Zeile = "gesendet: "+str(Ausgang)+" empfangen: "+str(Eingang)+" -----> vergangene Zeit: "+str(duration.seconds)+" Sekunden oder "+str(duration.microseconds)+" Microsekunden oder "+str(duration.microseconds/1000)+" ms"
                 f = open("Auswertung/Auswertung.txt", "a")
                 f.write(str(Zeile)+"\n")
@@ -58,14 +61,17 @@ class Auswerter(object):
             ergebnis = 0
             hochste_dauer = 0
             for a in self.unterschiede:
-                ergebnis = ergebnis+a
+                ergebnis = ergebnis+a*1000
                 if a > hochste_dauer:
                     hochste_dauer = a
             
-            Zeile = "gesendetete Packete: "+str(lange_werte)+" insgesamt gebrauchte Zeit in microseconds: "+str(ergebnis)+" durchschnitt: "+str(ergebnis/lange_werte)+" microsecons oder "+str((ergebnis/lange_werte)/1000)+" ms höchste Dauer: "+str(hochste_dauer/1000)+" ms"
+            Zeile = "gesendetete Packete: "+str(lange_werte)+" insgesamt gebrauchte Zeit in microseconds: "+str(ergebnis)+" durchschnitt: "+str(ergebnis/lange_werte)+" microsecons oder "+str((ergebnis/lange_werte)/1000)+" ms höchste Dauer: "+str(hochste_dauer)+" ms"
             f = open("Auswertung/Auswertung.txt", "a")
             f.write(str(Zeile)+"\n")
             f.close()
+
+            plt.plot(self.x_points,self.unterschiede,"ro")
+            plt.show()
 
 
 

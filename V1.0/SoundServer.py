@@ -4,6 +4,8 @@ import pickle
 import pyaudio
 import numpy as np
 import datetime
+import soundfile as sf
+
 
 
 class SoundServer(object):
@@ -28,14 +30,16 @@ class SoundServer(object):
                     self.state = "stopping"
 
             if self.state == "receiving":
-                self.frames.append(frame)
-                self.write_to_wav_file()
+                #self.frames.append(frame)
+                #self.write_to_wav_file()
+                print(frame)
             elif self.state == "stopping":
                 break
             self.create_time_stamp()
     def write_to_wav_file(self):
         numpydata = np.hstack(self.frames)
-        wav.write(self.filename,self.RATE,numpydata)
+        #wav.write(self.filename,self.RATE,numpydata)
+        #sf.write(self.filename, numpydata, self.RATE)
 
     def create_time_stamp(self):
         sendetime = datetime.datetime.now()

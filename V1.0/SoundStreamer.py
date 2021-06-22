@@ -1,7 +1,7 @@
 import pyaudio
-import wave
+#import wave
 import numpy
-import scipy.io.wavfile as wav
+#import scipy.io.wavfile as wav
 from npsocket import SocketNumpyArray
 import datetime
 
@@ -52,13 +52,13 @@ class SoundStreamer(object):
             print( "(%d) Error recording: %s"%(1,e) )
             return
 
-        self.frames.append(numpy.fromstring(block, dtype=numpy.int16))
+        #self.frames.append(numpy.fromstring(block, dtype=numpy.int16))
         self.send_to_Server(numpy.fromstring(block, dtype=numpy.int16))
-        self.write_soundfile()
+        #self.write_soundfile()
 
     def write_soundfile(self):
         numpydata = numpy.hstack(self.frames)
-        wav.write(self.fname,self.RATE,numpydata)
+        #wav.write(self.fname,self.RATE,numpydata)
         
     def stop_recording(self):
         self.send_to_Server(["stopping"])
@@ -110,8 +110,8 @@ class SoundStreamer(object):
 
 
 if __name__ == "__main__":
-    CLAUS = SoundStreamer(9999,"localhost")
-    for i in range(100000):
+    CLAUS = SoundStreamer(9999,"192.168.10.22")
+    for i in range(1000):
         CLAUS.listen_stream()
         CLAUS.create_time_stamp()
         print(i)
