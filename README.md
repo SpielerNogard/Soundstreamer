@@ -2,7 +2,32 @@
 
 Hi! This Project is named PyJ(H)ack. The aim is to write  a software that enables sound to be sent between two users or one user and the server. This should be done with as little delay as possible. The ultimate goal is to give the user the opportunity to create their own sound library, which they can access on any device without needing memory and which can also be shared with other users.
 The programming language chosen for this is Python, which was not created for realtime. This is precisely what motivates me to write software that is as performant as possible.
+# Functions
+```mermaid
+graph TD
+A[Microphone]
+B(Client Software)
+C(Server Software)
+D[Sound recording]
+E(Soundfile)
+F[Sound playing]
+G[Speaker]
+H[Soundlibrary]
+I[Soundfile on Server]
 
+B-->|Soundsamples|D
+D-->|Numpy Arrays|E
+B-->F
+E-->F
+F-->G
+A -->|Soundinput| B
+B -->|Socket Connection| C
+D -->|send sample| C
+C-->I
+I-->H
+H -->|donwnloading| B
+```
+The client can record the sound of the microphone (and later also of the system) and save it in sound files. These sound files can also be played back. In addition, it is possible to save the sound files directly on the server via a connection to the server. this allows the user to create a sound library. He can then call up these sound files on any device and share them with other users. In addition, there is the possibility of creating a direct client to client connection and thus sharing sound files directly with one another without having to go through a server and thus also via a user account
 
 # V0.0
 First I thought about how I can process sound in Python. I came across the Sounddevice library. the following files come from their [Documentation](https://python-sounddevice.readthedocs.io/en/0.4.1/examples.html).
