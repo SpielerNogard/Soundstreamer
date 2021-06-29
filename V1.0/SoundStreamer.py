@@ -1,7 +1,8 @@
 import pyaudio
 #import wave
+import wavio
 import numpy
-import scipy.io.wavfile as wav
+#import soundfile as sf
 from npsocket import SocketNumpyArray
 import datetime
 
@@ -67,7 +68,8 @@ class SoundStreamer(object):
 
     def write_soundfile(self):
         numpydata = numpy.hstack(self.frames)
-        wav.write(self.fname,self.RATE,numpydata)
+        #sf.write(self.fname, numpydata, self.RATE)
+        wavio.write(self.fname, numpydata, self.RATE, sampwidth=2)
         
     def stop_recording(self):
         self.send_to_Server(["stopping"])
