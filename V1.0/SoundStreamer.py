@@ -1,15 +1,15 @@
 import pyaudio
 #import wave
 import numpy
-#import scipy.io.wavfile as wav
+import scipy.io.wavfile as wav
 from npsocket import SocketNumpyArray
 import datetime
 
 class SoundStreamer(object):
-    def __init__(self,port,adress):
+    def __init__(self,port,adress,sample):
         self.port = port 
         self.adress = adress
-        self.fname = "SoundFiles/Client.wav"
+        self.fname = "SoundFiles/_48000_"+str(sample)+"_w.wav"
         self.mode ='wb'
         self.frames = []
 
@@ -18,12 +18,18 @@ class SoundStreamer(object):
         #Stream data for pyaudio
         self.FORMAT = pyaudio.paInt16
         self.CHANNELS = 1
-        self.RATE = 44100 
-        self.INPUT_FRAMES_PER_BLOCK = 1024
-        self.create_server_sender()
+        self.RATE = 48000 
+        self.INPUT_FRAMES_PER_BLOCK = sample
+        #self.create_server_sender()
         self.list_all_devices()
         self.eingabe_auswahl()
+        #self.device_id = 2
         self.stream = self.open_stream_without_callback()
+
+        self.stream2 = self.pa.open(format = pyaudio.paInt16, 
+                channels = 1, 
+                rate = self.RATE, 
+                output = True)
 
     def create_server_sender(self):
         self.sock_sender = SocketNumpyArray()
@@ -45,6 +51,7 @@ class SoundStreamer(object):
         self.stream.close()
 
     def listen_stream(self):
+        self.create_time_stamp()
         try:
             block = self.stream.read(self.INPUT_FRAMES_PER_BLOCK)
         except IOError as e:
@@ -52,13 +59,15 @@ class SoundStreamer(object):
             print( "(%d) Error recording: %s"%(1,e) )
             return
 
-        #self.frames.append(numpy.fromstring(block, dtype=numpy.int16))
-        self.send_to_Server(numpy.fromstring(block, dtype=numpy.int16))
+        self.frames.append(numpy.fromstring(block, dtype=numpy.int16))
+        #self.send_to_Server(numpy.fromstring(block, dtype=numpy.int16))
         #self.write_soundfile()
+        self.play_file(numpy.fromstring(block, dtype=numpy.int16))
+        self.create_time_stamp2()
 
     def write_soundfile(self):
         numpydata = numpy.hstack(self.frames)
-        #wav.write(self.fname,self.RATE,numpydata)
+        wav.write(self.fname,self.RATE,numpydata)
         
     def stop_recording(self):
         self.send_to_Server(["stopping"])
@@ -69,10 +78,15 @@ class SoundStreamer(object):
 
     def create_time_stamp(self):
         sendetime = datetime.datetime.now()
-        f = open("TimeStamps/ClientTimeStamps.txt", "a")
+        f = open("TimeStamps/ClientTimeStamps_before_output.txt", "a")
         f.write(str(sendetime)+"\n")
         f.close()
 
+    def create_time_stamp2(self):
+        sendetime = datetime.datetime.now()
+        f = open("TimeStamps/ClientTimeStamps_after_output.txt", "a")
+        f.write(str(sendetime)+"\n")
+        f.close()
     def list_all_devices(self):
         Ausgabedevices = []
         Eingabedevices = []
@@ -80,6 +94,7 @@ class SoundStreamer(object):
         for i in range( self.pa.get_device_count() ):    
             Deviceeigenschaften = [] 
             devinfo = self.pa.get_device_info_by_index(i)
+            print( "Device %d: %s"%(i,devinfo["name"]) )
             for keyword in ["microfon","input","mikrofon"]:   
                 if keyword in devinfo["name"].lower():
                     print( "Device %d: %s"%(i,devinfo["name"]) )
@@ -108,12 +123,17 @@ class SoundStreamer(object):
         device_id = input()
         self.device_id = int(device_id)
 
+    def play_file(self,frame):
+        self.stream2.write(frame.astype(numpy.int16).tostring())
 
 if __name__ == "__main__":
-    CLAUS = SoundStreamer(9999,"192.168.10.22")
-    for i in range(1000):
-        CLAUS.listen_stream()
-        CLAUS.create_time_stamp()
-        print(i)
+    samples = [512]
+    for sample in samples:
+        CLAUS = SoundStreamer(9999,"192.168.10.22",sample)
+        for i in range(int((4096/sample)*200)):
+            CLAUS.listen_stream()
+            #CLAUS.create_time_stamp()
+            print(i)
+        CLAUS.write_soundfile()
 
-    CLAUS.stop_recording()
+    #CLAUS.stop_recording()

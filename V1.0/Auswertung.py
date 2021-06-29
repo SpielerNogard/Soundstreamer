@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 class Auswerter(object):
     def __init__(self):
-        f = open("Auswertung/Auswertung.txt", "w")
+        f = open("Auswertung/Auswertung_stream.txt", "w")
         f.write("")
         f.close()
         self.real_sende_times = []
@@ -16,13 +16,13 @@ class Auswerter(object):
         self.zeiten_erhalten()
         self.werte_aus()
     def read_from_sendetimes(self):
-        with open("TimeStamps/ClientTimeStamps.txt") as f:
+        with open("TimeStamps/ClientTimeStamps_before_output.txt") as f:
             content = f.readlines()
             # you may also want to remove whitespace characters like `\n` at the end of each line
         self.sendezeiten =[x.strip() for x in content] 
 
     def read_from_recievetimes(self):
-        with open("TimeStamps/ServerTimeStamps.txt") as f:
+        with open("TimeStamps/ClientTimeStamps_after_output.txt") as f:
             content = f.readlines()
             # you may also want to remove whitespace characters like `\n` at the end of each line
         self.erhaltezeiten =[x.strip() for x in content] 
@@ -52,7 +52,7 @@ class Auswerter(object):
                 self.unterschiede.append(duration.microseconds/1000)
                 self.x_points.append(i)
                 Zeile = "gesendet: "+str(Ausgang)+" empfangen: "+str(Eingang)+" -----> vergangene Zeit: "+str(duration.seconds)+" Sekunden oder "+str(duration.microseconds)+" Microsekunden oder "+str(duration.microseconds/1000)+" ms"
-                f = open("Auswertung/Auswertung.txt", "a")
+                f = open("Auswertung/Auswertung_stream.txt", "a")
                 f.write(str(Zeile)+"\n")
                 f.close()
                 print(Ausgang-Eingang)
@@ -66,7 +66,7 @@ class Auswerter(object):
                     hochste_dauer = a
             
             Zeile = "gesendetete Packete: "+str(lange_werte)+" insgesamt gebrauchte Zeit in microseconds: "+str(ergebnis)+" durchschnitt: "+str(ergebnis/lange_werte)+" microsecons oder "+str((ergebnis/lange_werte)/1000)+" ms höchste Dauer: "+str(hochste_dauer)+" ms"
-            f = open("Auswertung/Auswertung.txt", "a")
+            f = open("Auswertung/Auswertung_stream.txt", "a")
             f.write(str(Zeile)+"\n")
             f.close()
 
